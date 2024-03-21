@@ -1,0 +1,2 @@
+[console_scripts]
+nesvor = nesvor.cli.main:main

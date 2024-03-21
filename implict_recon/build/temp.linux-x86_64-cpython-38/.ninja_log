@@ -1,0 +1,5 @@
+# ninja log v5
+1	32200	1711015892528161403	/home/lvyao/Git/S-R/implict_recon/build/temp.linux-x86_64-cpython-38/home/lvyao/Git/S-R/implict_recon/nesvor/slice_acquisition/slice_acq_cuda.o	c286e8663485a369
+1	63574	1711015892528161403	/home/lvyao/Git/S-R/implict_recon/build/temp.linux-x86_64-cpython-38/home/lvyao/Git/S-R/implict_recon/nesvor/slice_acquisition/slice_acq_cuda_kernel.o	2ca1b3e34d1ccf8c
+8	24131	1711015956982611506	/home/lvyao/Git/S-R/implict_recon/build/temp.linux-x86_64-cpython-38/home/lvyao/Git/S-R/implict_recon/nesvor/transform/transform_convert_cuda.o	4e212c501b6624a9
+8	53999	1711015956982611506	/home/lvyao/Git/S-R/implict_recon/build/temp.linux-x86_64-cpython-38/home/lvyao/Git/S-R/implict_recon/nesvor/transform/transform_convert_cuda_kernel.o	87b14dec255c0b95
