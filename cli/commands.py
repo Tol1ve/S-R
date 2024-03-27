@@ -4,8 +4,9 @@ import logging
 import re
 import torch
 from typing import List, Optional, Tuple
-from ..image import Stack, Slice
-from ..svort.inference import svort_predict
+
+from image import Stack, Slice
+from svort.inference import svort_predict
 from ..nesvor.train import train
 from ..nesvor.sample import sample_volume, sample_slices
 from .io import outputs, inputs

@@ -5,13 +5,13 @@ import numpy as np
 import nibabel as nib
 import torch
 import torch.nn.functional as F
-from ..transform import RigidTransform, transform_points
+from transform import RigidTransform, transform_points
 from .image_utils import (
     affine2transformation,
     compare_resolution_affine,
     transformation2affine,
 )
-from ..utils import meshgrid
+from utils import meshgrid
 
 
 class Image(object):
