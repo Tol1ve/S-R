@@ -1,0 +1,1 @@
+This module is adapted from [https://github.com/FNNDSC/pl-fetal-brain-assessment](https://github.com/FNNDSC/pl-fetal-brain-assessment).
