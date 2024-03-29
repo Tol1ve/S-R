@@ -346,11 +346,27 @@ class SVR(Reconstruct):
             },
             self.args,
         )
-
-
 Svr = SVR
 
-class sr(Command):
+
+class ConditionalRepresent(Command):
+    def check_args(self) -> None:
+        # input
+        check_input_stacks_slices(self.args)
+    def preprocess(self) -> Dict[str, Any]:
+        input_dict, self.args = inputs(self.args)
+        # segmentation
+        if self.args.segmentation:
+            self.new_timer("Volume segmentation")
+    def exec(self) -> None:
+        input_dict = self.preprocess()
+        self.new_timer("Reconsturction")
+        output_volume, output_slices, simulated_slices = slice_to_volume_reconstruction(
+        
+    )
+
+
+class SemanticSegment(Command):
     def exec(self) -> None:
         self.new_timer("Data loading")
         input_dict, self.args = inputs(self.args)

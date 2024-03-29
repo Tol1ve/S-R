@@ -5,21 +5,48 @@ import sys
 import string
 import logging
 from .parsers import main_parser
+import json
 
 
 def main() -> None:
+    
     parser, subparsers = main_parser()
-    # print help if no args are provided
     if len(sys.argv) == 1:
-        parser.print_help(sys.stdout)
-        return
+        # read the settings from config file if no args provided and contain args in config file
+        #  todo:what if the root dir change?
+        with open('./S-R/config/config.json', 'r') as file:
+            commmands = json.load(file)['configurations']
+        for commmand in commmands:
+            if len(sys.argv) > 1:
+                break
+            if isinstance(commmand, dict) and "commmand" in commmand:
+                # if there are various arg config, the default is the first dict.
+                sys.argv.append(commmand["commmand"])
+                for key, value in commmand.items():
+                    if key != "commmand":
+                        sys.argv.append(key)
+                        if isinstance(value, list):
+                            for v in value:
+                                sys.argv.append(v)
+                        else:
+                            sys.argv.append(value)
+            else:
+                logging.warning(
+                    "find a non-dict or no-commmand arg setting in config file, will ignore it\
+                    ,please make sure your config with the correct format")
+        # print help if no args are provided and no args in config file
+        
+        if len(sys.argv) == 1:
+            parser.print_help(sys.stdout)
+            return
     if len(sys.argv) == 2:
         if sys.argv[-1] in subparsers.choices:
             subparsers.choices[sys.argv[-1]].print_help(sys.stdout)
             return
+    
     # parse args
-    args = parser.parse_args()
-
+    args = parser.parse_args(args=sys.argv[1:])
+    
     run(args)
 
 

@@ -1,9 +1,10 @@
 #to train a total MLP with latent codes
 #to train a set of MLPs for each subject
-import sys
+#import sys
 #from os.path import abspath, join, dirname
 #sys.path.insert(0, join(abspath(dirname(__file__)), 'src'))
-sys.path.insert(0,'/home/lvyao/Git/S-R')
+#it can add the filepath to pythonenvpath
+
 import numpy as np
 import nesvor_mod.cli.commands
 

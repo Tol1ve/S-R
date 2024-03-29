@@ -1,0 +1,30 @@
+
+{
+    "configurations": [
+        {
+            "commmand": "reconstruct",
+            "--input-stacks": ["s1","s2"],
+            "--output-slices": " ",
+            "--output-volume": " ",
+            "--output-model": " "
+        },
+        {
+            "commmand": "register",
+            "--input-stacks": " ",
+            "--output-slices": " "
+        },
+
+        {
+            "commmand": "sample-volume",
+            "--input-model": " ",
+            "--output-volume": " "
+        },
+
+        {
+            "commmand": "sample-slice",
+            "--input-slices": " ",
+            "--input-model": " ",
+            "--simulate-slices": " "
+        }
+    ]
+}

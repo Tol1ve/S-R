@@ -307,7 +307,55 @@ def build_parser_inputs(
         )
     return _parser
 
+def build_parser_inputs_conditional_represent(
+    *,
+    input_dataset: Union[bool, str] = False,
+    input_dataset_mask: Union[bool, str] = False,
 
+) -> argparse.ArgumentParser:
+    """arguments related to input data"""
+    _parser = argparse.ArgumentParser(add_help=False)
+    parser = _parser.add_argument_group("inputs_conditional_represent")
+    # stack input
+    if input_dataset:
+        parser.add_argument(
+            "--input-dataset",
+            type=str,
+            required=input_dataset == "required",
+            help="Paths to the input stacks dataset (NIfTIs).",
+        )
+        if input_dataset_mask:
+            parser.add_argument(
+                "--input-dataset-mask",
+                type=str,
+                required=input_dataset_mask == "required",
+                help="Paths to the input stacks mask dataset (NIfTIs).",
+            )
+        return _parser
+def build_parser_inputs_semantic_segment(
+    *,
+    input_dataset: Union[bool, str] = False,
+    input_dataset_mask: Union[bool, str] = False,
+) -> argparse.ArgumentParser:
+    """arguments related to input data"""
+    _parser = argparse.ArgumentParser(add_help=False)
+    parser = _parser.add_argument_group("inputs_semantic_segment")
+    # stack input
+    if input_dataset:
+        parser.add_argument(
+            "--input-dataset",
+            type=str,
+            required=input_dataset == "required",
+            help="Paths to the input stacks dataset (NIfTIs).",
+        )
+        if input_dataset_mask:
+            parser.add_argument(
+                "--input-dataset-mask",
+                type=str,
+                required=input_dataset_mask == "required",
+                help="Paths to the input stacks mask dataset (NIfTIs).",
+            )
+        return _parser
 def build_parser_stack_masking(*, stack_masks=True) -> argparse.ArgumentParser:
     """arguments related to ROI maksing for input stacks"""
     _parser = argparse.ArgumentParser(add_help=False)
@@ -430,7 +478,73 @@ def build_parser_outputs(
     update_defaults(_parser, **kwargs)
     return _parser
 
+def build_parser_outputs_conditional_represent(
+    *,
+    output_model: Union[bool, str] = False,
+    output_dataset_folder: Union[bool, str] = False,
 
+) -> argparse.ArgumentParser:
+    """arguments related to input data for conditional represent"""
+    _parser = argparse.ArgumentParser(add_help=False)
+    parser = _parser.add_argument_group("ouputs_conditional_represent")
+    # stack input
+    if output_model:
+        parser.add_argument(
+            "--output-model",
+            type=str,
+            required=output_model == "required",
+            help="Paths to save conditional neural model(.pt).",
+        )
+    if output_dataset_folder:
+        parser.add_argument(
+            "--output-dataset-folder",
+            type=str,
+            required=output_dataset_folder == "required",
+            help="Paths to save the reconstructed data in dataset(NIfTIs).",
+        )
+        return _parser
+def build_parser_outputs_semantic_segment(
+    *,
+    output_model_folder: Union[bool, str] = False,
+    output_dataset_folder: Union[bool, str] = False,
+    output_unet_model: Union[bool, str] = False,
+    output_segment_folder: Union[bool, str] = False,
+
+) -> argparse.ArgumentParser:
+    """arguments related to input data for semantic segment"""
+    _parser = argparse.ArgumentParser(add_help=False)
+    parser = _parser.add_argument_group("ouputs_semantic_segment")
+    # stack input
+    if output_model_folder:
+        parser.add_argument(
+            "--output-model-folder",
+            type=str,
+            required=output_model_folder == "required",
+            help="Paths to the trained neural fields of datasets.",
+        )
+    
+    if output_unet_model:
+        parser.add_argument(
+            "--output-unet-model",
+            type=str,
+            required=output_unet_model == "required",
+            help="Path to save the output model (.pt)",
+        )
+    if output_segment_folder:
+        parser.add_argument(
+            "--output-segment-folder",
+            type=str,
+            required=output_segment_folder == "required",
+            help="Path to save the final segmented volume (.pt)",
+        )
+    if output_dataset_folder:
+        parser.add_argument(
+            "--output-dataset-folder",
+            type=str,
+            required=output_dataset_folder == "required",
+            help="Path to save the reconstruted volume(Niftis)",
+        )
+        return _parser
 def build_parser_outputs_sampling(
     *,
     output_volume: Union[bool, str] = False,
@@ -1073,7 +1187,44 @@ def build_command_svr(
     )
     return parser_svr
 
-
+def build_command_conditional_represent(
+    subparsers: argparse._SubParsersAction,
+) -> argparse.ArgumentParser:
+    # svr
+    parser_cr = add_subcommand(
+        subparsers,
+        name="conditional_represent",
+        help="conditional implicit neural field for spatio-temporal representation of fetal brains",
+        description=(
+            "This command implements a personal pipeline for conditional implicit neural field traing and testing"
+            "It can only be applied to data with rigid motion (e.g., brain). "
+        ),
+        parents=[
+            build_parser_inputs_conditional_represent(input_dataset="required",input_dataset_mask=True),
+            build_parser_outputs_conditional_represent(output_dataset="required",output_model=True),
+            build_parser_common(),
+        ],
+    )
+    return parser_cr
+def build_command_semantic_segment(
+    subparsers: argparse._SubParsersAction,
+) -> argparse.ArgumentParser:
+    # svr
+    parser_ss = add_subcommand(
+        subparsers,
+        name="semantic_segment",
+        help="generalizable semantic segmentation of 3D fetal brain",
+        description=(
+            "This command implements a pipeline to train a unet-like semantic network with a set of pre-train inrs for fetal brains. "
+            "It is still for testing and research. "
+        ),
+        parents=[
+            build_parser_inputs_semantic_segment(input_dataset="required",input_dataset_mask=True),
+            build_parser_outputs_semantic_segment(output_dataset="required",output_model=True,output_segment_folder=True,output_unet_model=True),
+            build_parser_common(),
+        ],
+    )
+    return parser_ss
 def main_parser(
     title="commands", metavar="COMMAND", dest="command"
 ) -> Tuple[argparse.ArgumentParser, argparse._SubParsersAction]:
