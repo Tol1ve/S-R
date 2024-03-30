@@ -329,7 +329,7 @@ def build_parser_inputs_conditional_represent(
                 "--input-dataset-mask",
                 type=str,
                 required=input_dataset_mask == "required",
-                help="Paths to the input stacks mask dataset (NIfTIs).",
+                help="set true to use the input stacks dataset.",
             )
         return _parser
 def build_parser_inputs_semantic_segment(
@@ -1193,7 +1193,7 @@ def build_command_conditional_represent(
     # svr
     parser_cr = add_subcommand(
         subparsers,
-        name="conditional_represent",
+        name="conditional-represent",
         help="conditional implicit neural field for spatio-temporal representation of fetal brains",
         description=(
             "This command implements a personal pipeline for conditional implicit neural field traing and testing"
@@ -1201,7 +1201,7 @@ def build_command_conditional_represent(
         ),
         parents=[
             build_parser_inputs_conditional_represent(input_dataset="required",input_dataset_mask=True),
-            build_parser_outputs_conditional_represent(output_dataset="required",output_model=True),
+            build_parser_outputs_conditional_represent(output_dataset_folder="required",output_model=True),
             build_parser_common(),
         ],
     )
@@ -1212,7 +1212,7 @@ def build_command_semantic_segment(
     # svr
     parser_ss = add_subcommand(
         subparsers,
-        name="semantic_segment",
+        name="semantic-segment",
         help="generalizable semantic segmentation of 3D fetal brain",
         description=(
             "This command implements a pipeline to train a unet-like semantic network with a set of pre-train inrs for fetal brains. "
@@ -1220,7 +1220,7 @@ def build_command_semantic_segment(
         ),
         parents=[
             build_parser_inputs_semantic_segment(input_dataset="required",input_dataset_mask=True),
-            build_parser_outputs_semantic_segment(output_dataset="required",output_model=True,output_segment_folder=True,output_unet_model=True),
+            build_parser_outputs_semantic_segment(output_dataset_folder="required",output_model_folder=True,output_segment_folder=True,output_unet_model=True),
             build_parser_common(),
         ],
     )
@@ -1256,6 +1256,8 @@ def main_parser(
     build_command_assess(subparsers)
     # build_command_segment_volume(subparsers)
     build_command_svr(subparsers)
+    build_command_conditional_represent(subparsers)
+    build_command_semantic_segment(subparsers)
     return parser, subparsers
 
 

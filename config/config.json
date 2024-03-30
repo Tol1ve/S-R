@@ -1,6 +1,13 @@
 
 {
     "configurations": [
+
+        {
+            "commmand": "conditional-represent",
+            "--input-dataset": "/home/lvyao/Git/S-R-data/feta_2.2",
+            "--input-dataset-mask": "_",
+            "--output-dataset-folder":"/home/lvyao/Git/S-R-data/feta_conditional_represent_result"
+        },
         {
             "commmand": "reconstruct",
             "--input-stacks": ["s1","s2"],

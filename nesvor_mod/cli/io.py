@@ -2,6 +2,7 @@ import torch
 from typing import Dict, Tuple, Any, Optional
 from argparse import Namespace
 import json
+import os
 import logging
 from ..image import (
     Volume,
@@ -9,6 +10,7 @@ from ..image import (
     load_slices,
     load_stack,
     load_mask,
+    load_volume,
 )
 from ..inr.models import INR
 from ..utils import merge_args
@@ -105,3 +107,49 @@ def load_model(args: Namespace) -> Tuple[INR, Volume, Namespace]:
     mask = cp["mask"]
     args = merge_args(cp["args"], args)
     return inr, mask, args
+
+
+def inputs_dataset(args: Namespace) -> Tuple[Dict, Namespace]:
+    input_dict: Dict[str, Any] = dict()
+    if getattr(args, "input_dataset", None) is not None:
+        
+        input_volumes = []
+        logging.info("loading dataset")
+        if not os.path.exists(args.input_dataset):
+            raise FileNotFoundError(f"no such directionary：{args.input_dataset}")
+        #operation for the feta dataset
+        elif 'feta' in args.input_dataset:
+            subfiles=[]
+            if args.input_dataset_mask=='_':
+                submasks=[]
+            for d in os.listdir(args.input_dataset):
+                if os.path.isdir(os.path.join(args.input_dataset, d)) and 'sub-' in d:
+                    _path=os.path.join(os.path.join(args.input_dataset, d),"anat")
+                    for f in os.listdir(_path):
+                        if f.endswith('.nii.gz') and 'seg' not in  f:
+                            _imagepath=os.path.join(_path, f)
+                            subfiles.append(_imagepath)
+                        if args.input_dataset_mask=='_':
+                            if f.endswith('.nii.gz') and 'seg' in  f:
+                                _maskpath=os.path.join(_path, f)
+                                submasks.append(_maskpath)
+                                
+        else:
+            raise NotImplementedError("not able for dataset：{}".format(args.input_dataset))
+
+
+        for i, f in enumerate(subfiles):
+            volume = load_volume(
+                f,
+                submasks
+                if getattr(args, "inputs_dataset_mask", None) is not None
+                else None,
+                device=args.device,
+            )
+            input_volumes.append(volume)
+
+
+
+        input_dict["input_dataset"] = input_volumes
+        return input_dict, args
+ 

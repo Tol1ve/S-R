@@ -10,7 +10,7 @@ from ..svort.inference import svort_predict
 from ..inr.train import train
 from ..inr.models import INR
 from ..inr.sample import sample_volume, sample_slices, override_sample_mask
-from .io import outputs, inputs
+from .io import outputs, inputs,inputs_dataset
 from ..utils import makedirs, log_args, log_result
 from ..preprocessing import n4_bias_field_correction, assess, brain_segmentation
 from ..segmentation import twai
@@ -348,23 +348,22 @@ class SVR(Reconstruct):
         )
 Svr = SVR
 
-
+#use inputs_dataset to get a list of volume
 class ConditionalRepresent(Command):
     def check_args(self) -> None:
         # input
-        check_input_stacks_slices(self.args)
+        check_input_dataset(self.args)
     def preprocess(self) -> Dict[str, Any]:
-        input_dict, self.args = inputs(self.args)
-        # segmentation
-        if self.args.segmentation:
-            self.new_timer("Volume segmentation")
+        self.new_timer("Data loading")
+        input_dict, self.args = inputs_dataset(self.args)
+        return input_dict
+
+
     def exec(self) -> None:
         input_dict = self.preprocess()
         self.new_timer("Reconsturction")
-        output_volume, output_slices, simulated_slices = slice_to_volume_reconstruction(
-        
-    )
-
+        model, output_slices, mask = train(input_dict["input_volumes"], self.args)
+        self.new_timer("Results saving")
 
 class SemanticSegment(Command):
     def exec(self) -> None:
@@ -568,3 +567,6 @@ def check_input_stacks_slices(args: argparse.Namespace) -> None:
             if len(args.thicknesses) == 1:
                 args.thicknesses = args.thicknesses * len(args.input_stacks)
         check_len(args, "input_stacks", "thicknesses")
+
+def check_input_dataset(args: argparse.Namespace) -> None:
+    assert(args.input_dataset is not None),"please provide a training dataset"
